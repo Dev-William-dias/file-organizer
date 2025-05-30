@@ -3,6 +3,7 @@ package view;
 import application.Main;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -16,7 +17,9 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -62,8 +65,11 @@ public class HomeController extends DataChangeListener implements Initializable 
     private TableColumn<Document, Document> columnBtRemover;
 
     @FXML
-    private Label labelError;
-
+    private ComboBox<String> categories;
+    
+    @FXML
+    private ProgressIndicator progressView;
+    
     @FXML
     private Label labelTotalFiles;
 
@@ -123,7 +129,6 @@ public class HomeController extends DataChangeListener implements Initializable 
                 dialogStage.initModality(Modality.WINDOW_MODAL);
                 dialogStage.showAndWait();
             } catch (IOException e) {
-                e.printStackTrace();
                 Alert.showAlert("Erro", "", e.toString(), javafx.scene.control.Alert.AlertType.WARNING);
             }
         }
@@ -147,8 +152,46 @@ public class HomeController extends DataChangeListener implements Initializable 
         }
     }
 
+    public void onBtSearch() {
+        tableFiles.getItems().clear();
+        progressView.setVisible(true);
+        String search = txtSearch.getText();
+        String categorie = categories.getValue();
+        
+        List<Document> obj = service.findAllFileDate();
+        
+        List<Document> list = new ArrayList<>();
+        
+        if (categorie != null && !"Categoria".equals(categorie)) {
+            for (Document d : obj) {
+                if (categorie.equals(d.getCategory())) {
+                    list.add(d);
+                }
+            }
+        } else if (search.isEmpty()) {
+            for (Document d : obj) {
+                
+                if (d.getName().equals(search)) {
+                    list.add(d);
+                }
+                
+            }
+        }
+        
+        if (!list.isEmpty()) {
+            obsList = FXCollections.observableArrayList(list);
+            tableFiles.setItems(obsList);
+        } else {
+           Alert.showAlert("Info", "", "Arquivo não emcontrado.", javafx.scene.control.Alert.AlertType.INFORMATION);
+           addDataTable();
+        }
+        
+        progressView.setVisible(false);
+    }
+    
     public void onBtupdateTable() {
         addDataTable();
+        addCategoryComboBox();
     }
 
     @Override
@@ -171,6 +214,8 @@ public class HomeController extends DataChangeListener implements Initializable 
         columnName.setCellValueFactory(new PropertyValueFactory<>("name"));
         columnCategory.setCellValueFactory(new PropertyValueFactory<>("category"));
         addDataTable();
+        addCategoryComboBox();
+        progressView.setVisible(false);
     }
 
     private void addDataTable() {
@@ -183,6 +228,14 @@ public class HomeController extends DataChangeListener implements Initializable 
         initBtDelete();
     }
 
+    private void addCategoryComboBox() {
+        categories.getItems().clear();
+        categories.getItems().add("Categoria");
+        for (String category : Tools.readListCategory()) {
+            categories.getItems().add(category);
+        }
+    }
+    
     //buttons functionsç
     private void initBtShowFile() {
         columnBtView.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
@@ -307,9 +360,10 @@ public class HomeController extends DataChangeListener implements Initializable 
             addDataTable();
         }
     }
-
+    
     @Override
     public void onDataChanged() {
         addDataTable();
+        addCategoryComboBox();
     }
 }

@@ -94,12 +94,12 @@ public class AddEditController implements Initializable {
     }
 
     public void onBtEidt(ActionEvent event) {
-        if (txtEditName.getText().equals("") || txtaEditDescription.getText().equals("")) {
+        if (txtEditName.getText().equals("")) {
             labelAlert.setText("Erro ao Atualizar.");
         } else {
             document.setName(txtEditName.getText());
             document.setDescription(txtaEditDescription.getText());
-            if (!cbFileCategories.getValue().equals(null)) {
+            if (cbFileCategories.getValue() != null) {
                 document.setCategory(cbFileCategories.getValue());
             }
 
