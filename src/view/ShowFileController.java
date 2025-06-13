@@ -25,10 +25,10 @@ public class ShowFileController implements Initializable {
     private ImageView backgroundImage;
     
     @FXML
-    private ScrollPane scrollPaneView;
+    private ImageView showPage;  
     
     @FXML
-    private ImageView showPage;  
+    private ScrollPane scrollPaneView;
     
     @FXML
     private Label labelPageNumber;
@@ -60,6 +60,13 @@ public class ShowFileController implements Initializable {
         showFile();
     }
 
+    
+    public void onBtAdjust() {
+        showPage.setFitWidth(scrollPaneView.getWidth());
+        showPage.setFitHeight(scrollPaneView.getHeight());
+    }
+            
+            
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         initializerNodes();
@@ -71,7 +78,7 @@ public class ShowFileController implements Initializable {
             showPage.setImage(image);
             showPage.setPreserveRatio(false);
             
-            labelPageNumber.setText(""+(page+1)+"/"+document.getNumberPages());
+            labelPageNumber.setText((page+1)+"/"+document.getNumberPages());
      
             showPage.setFitHeight(800);
         }

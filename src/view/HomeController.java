@@ -158,18 +158,18 @@ public class HomeController extends DataChangeListener implements Initializable 
         String search = txtSearch.getText();
         String categorie = categories.getValue();
         
-        List<Document> obj = service.findAllFileDate();
+        List<Document> documents = service.findAllFileDate();
         
         List<Document> list = new ArrayList<>();
         
         if (categorie != null && !"Categoria".equals(categorie)) {
-            for (Document d : obj) {
+            for (Document d : documents) {
                 if (categorie.equals(d.getCategory())) {
                     list.add(d);
                 }
             }
         } else if (search.isEmpty()) {
-            for (Document d : obj) {
+            for (Document d : documents) {
                 
                 if (d.getName().equals(search)) {
                     list.add(d);
@@ -191,7 +191,6 @@ public class HomeController extends DataChangeListener implements Initializable 
     
     public void onBtupdateTable() {
         addDataTable();
-        addCategoryComboBox();
     }
 
     @Override
@@ -214,11 +213,11 @@ public class HomeController extends DataChangeListener implements Initializable 
         columnName.setCellValueFactory(new PropertyValueFactory<>("name"));
         columnCategory.setCellValueFactory(new PropertyValueFactory<>("category"));
         addDataTable();
-        addCategoryComboBox();
         progressView.setVisible(false);
     }
 
     private void addDataTable() {
+        categories.getItems().clear();
         List<Document> list = service.findAllFileDate();
         labelTotalFiles.setText("Total de Arquivos: " + list.size());
         obsList = FXCollections.observableArrayList(list);
@@ -226,13 +225,12 @@ public class HomeController extends DataChangeListener implements Initializable 
         initBtShowFile();
         initBtDownload();
         initBtDelete();
-    }
-
-    private void addCategoryComboBox() {
-        categories.getItems().clear();
-        categories.getItems().add("Categoria");
-        for (String category : Tools.readListCategory()) {
-            categories.getItems().add(category);
+        String oldCategory = "";
+        for (Document document: list) {       
+            if (!oldCategory.equals(document.getCategory())) {     
+                oldCategory = document.getCategory();
+                categories.getItems().add(document.getCategory());
+            }     
         }
     }
     
@@ -364,6 +362,5 @@ public class HomeController extends DataChangeListener implements Initializable 
     @Override
     public void onDataChanged() {
         addDataTable();
-        addCategoryComboBox();
     }
 }

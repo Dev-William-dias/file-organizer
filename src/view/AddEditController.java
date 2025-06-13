@@ -116,9 +116,10 @@ public class AddEditController implements Initializable {
 
     private void addCategoryComboBox() {
         cbFileCategories.getItems().clear();
-        for (String category : Tools.readListCategory()) {
+       
+        for (String category: Tools.getCategory()) {
             cbFileCategories.getItems().add(category);
-        }
+        }  
     }
 
     public void subscriberDataChangeListener(DataChangeListener listener) {

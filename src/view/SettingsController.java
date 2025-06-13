@@ -8,11 +8,14 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import model.jdbc.CategoryJDBC;
 import view.util.Alert;
 import view.util.Tools;
 
 public class SettingsController implements Initializable {
 
+    private final CategoryJDBC categoryJDBC = new CategoryJDBC();
+    
     @FXML
     private ComboBox<String> cbCategory;
 
@@ -30,7 +33,8 @@ public class SettingsController implements Initializable {
           txtAddCategory.setStyle("-fx-border-color: red;");
         } else {
             txtAddCategory.setStyle("-fx-border-color: #000;");
-            Tools.addCategory(txtAddCategory.getText().toLowerCase());
+            String category = txtAddCategory.getText().toLowerCase();
+            categoryJDBC.insert(category);
             addCategoryComboBox();
         }
     }
@@ -39,7 +43,8 @@ public class SettingsController implements Initializable {
         if (!cbCategory.getValue().equals("Categorias")) {
             Optional<ButtonType> result = Alert.showConfirmation("Confirmação", "Tem certeza de que deseja excluir?");
             if (result.get() == ButtonType.OK) {
-                Tools.removeCategory(cbCategory.getValue());
+                categoryJDBC.deleteById(cbCategory.getValue().split("-")[0]);
+                addCategoryComboBox();
             }
         } else {
             Alert.showAlert("Info", "", "Selecione uma categoria.", javafx.scene.control.Alert.AlertType.INFORMATION);
@@ -48,10 +53,9 @@ public class SettingsController implements Initializable {
     
     private void addCategoryComboBox() {
         cbCategory.getItems().clear();
-        for (String category : Tools.readListCategory()) {
-            cbCategory.getItems().add(category);
+        
+        for (String s: Tools.getCategory()) {
+            cbCategory.getItems().add(s);
         }
-    }
-    
-    
+    } 
 }
