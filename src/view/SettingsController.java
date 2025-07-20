@@ -8,13 +8,13 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
-import model.jdbc.CategoryJDBC;
+import model.jdbc.UtilJDBC;
 import view.util.Alert;
 import view.util.Tools;
 
 public class SettingsController implements Initializable {
 
-    private final CategoryJDBC categoryJDBC = new CategoryJDBC();
+    private final UtilJDBC utilJDBC = new UtilJDBC();
     
     @FXML
     private ComboBox<String> cbCategory;
@@ -34,7 +34,7 @@ public class SettingsController implements Initializable {
         } else {
             txtAddCategory.setStyle("-fx-border-color: #000;");
             String category = txtAddCategory.getText().toLowerCase();
-            categoryJDBC.insert(category);
+            utilJDBC.insert(category);
             addCategoryComboBox();
         }
     }
@@ -43,7 +43,7 @@ public class SettingsController implements Initializable {
         if (!cbCategory.getValue().equals("Categorias")) {
             Optional<ButtonType> result = Alert.showConfirmation("Confirmação", "Tem certeza de que deseja excluir?");
             if (result.get() == ButtonType.OK) {
-                categoryJDBC.deleteById(cbCategory.getValue().split("-")[0]);
+                utilJDBC.deleteById(cbCategory.getValue().split("-")[0]);
                 addCategoryComboBox();
             }
         } else {

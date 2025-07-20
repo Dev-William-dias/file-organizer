@@ -4,12 +4,15 @@ import application.Main;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.Set;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -20,6 +23,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.ScrollBar;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -42,6 +46,8 @@ public class HomeController extends DataChangeListener implements Initializable 
     private final DocumentService service = new DocumentService();
     private Stage stage;
     private Document obj = null;
+
+    private int offset = 0;
 
     @FXML
     private TableView<Document> tableFiles;
@@ -66,10 +72,10 @@ public class HomeController extends DataChangeListener implements Initializable 
 
     @FXML
     private ComboBox<String> categories;
-    
+
     @FXML
     private ProgressIndicator progressView;
-    
+
     @FXML
     private Label labelTotalFiles;
 
@@ -85,7 +91,7 @@ public class HomeController extends DataChangeListener implements Initializable 
     @FXML
     private TextField txtSearch;
 
-    private ObservableList<Document> obsList;
+    private ObservableList<Document> obsList = FXCollections.observableArrayList();
 
     //Show Windows
     public void onBtWindowSave() {
@@ -94,7 +100,7 @@ public class HomeController extends DataChangeListener implements Initializable 
             AnchorPane anchorPane = loader.load();
 
             AddEditController controller = loader.getController();
-            controller.setDatas(service,null);
+            controller.setDatas(service, null);
             controller.subscriberDataChangeListener(this);
 
             Stage dialogStage = new Stage();
@@ -117,9 +123,9 @@ public class HomeController extends DataChangeListener implements Initializable 
                 AnchorPane anchorPane = loader.load();
 
                 AddEditController controller = loader.getController();
-                controller.setDatas(service,obj);
+                controller.setDatas(service, obj);
                 controller.subscriberDataChangeListener(this);
-                
+
                 Stage dialogStage = new Stage();
                 dialogStage.setTitle("Editar a arquivo");
                 dialogStage.getIcons().add(new Image(getClass().getResourceAsStream("/view/imgs/icons/researchBooks.png")));
@@ -157,11 +163,11 @@ public class HomeController extends DataChangeListener implements Initializable 
         progressView.setVisible(true);
         String search = txtSearch.getText();
         String categorie = categories.getValue();
-        
+
         List<Document> documents = service.findAllFileDate();
-        
+
         List<Document> list = new ArrayList<>();
-        
+
         if (categorie != null && !"Categoria".equals(categorie)) {
             for (Document d : documents) {
                 if (categorie.equals(d.getCategory())) {
@@ -170,25 +176,25 @@ public class HomeController extends DataChangeListener implements Initializable 
             }
         } else if (search.isEmpty()) {
             for (Document d : documents) {
-                
+
                 if (d.getName().equals(search)) {
                     list.add(d);
                 }
-                
+
             }
         }
-        
+
         if (!list.isEmpty()) {
             obsList = FXCollections.observableArrayList(list);
             tableFiles.setItems(obsList);
         } else {
-           Alert.showAlert("Info", "", "Arquivo não emcontrado.", javafx.scene.control.Alert.AlertType.INFORMATION);
-           addDataTable();
+            Alert.showAlert("Info", "", "Arquivo não emcontrado.", javafx.scene.control.Alert.AlertType.INFORMATION);
+            addDataTable();
         }
-        
+
         progressView.setVisible(false);
     }
-    
+
     public void onBtupdateTable() {
         addDataTable();
     }
@@ -198,6 +204,7 @@ public class HomeController extends DataChangeListener implements Initializable 
         initializerNodes();
         stage = Main.getStage();
 
+        //pega os dados do objeto da tabela
         tableFiles.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, selection) -> {
             if (selection != null) {
                 labelNumberPage.setText("Numero de Paginas: " + selection.getNumberPages());
@@ -205,6 +212,16 @@ public class HomeController extends DataChangeListener implements Initializable 
                 labelDescription.setText("" + selection.getDescription());
                 obj = selection;
             }
+        });
+
+        //carrega mais dados na tabela
+        tableFiles.skinProperty().addListener((obs, oldSkin, newSkin) -> {
+            ScrollBar scrollBar = (ScrollBar) tableFiles.lookup(".scroll-bar:vertical");
+            scrollBar.valueProperty().addListener((o, oldVal, newVal) -> {
+                if (newVal.doubleValue() == scrollBar.getMax()) {
+                    addDataTable();
+                }
+            });
         });
     }
 
@@ -214,26 +231,51 @@ public class HomeController extends DataChangeListener implements Initializable 
         columnCategory.setCellValueFactory(new PropertyValueFactory<>("category"));
         addDataTable();
         progressView.setVisible(false);
+        labelTotalFiles.setText("Total de Arquivos: " + Tools.getNumberFiles());
     }
 
     private void addDataTable() {
-        categories.getItems().clear();
-        List<Document> list = service.findAllFileDate();
-        labelTotalFiles.setText("Total de Arquivos: " + list.size());
-        obsList = FXCollections.observableArrayList(list);
-        tableFiles.setItems(obsList);
-        initBtShowFile();
-        initBtDownload();
-        initBtDelete();
-        String oldCategory = "";
-        for (Document document: list) {       
-            if (!oldCategory.equals(document.getCategory())) {     
-                oldCategory = document.getCategory();
-                categories.getItems().add(document.getCategory());
-            }     
-        }
+        Task<List<Document>> task = new Task<>() {
+            @Override
+            protected List<Document> call() {
+                return service.findQuantityFileDate(20, offset);
+            }
+        };
+
+        Task<List<String>> task2 = new Task<>() {
+            @Override
+            protected List<String> call() throws Exception {
+               return Tools.getCategory();
+            }   
+        };
+        
+        task2.setOnSucceeded(e -> {
+            Set<String> existCategorie = new HashSet<>(categories.getItems());
+            for (String categorieList : task2.getValue()) {
+                if (existCategorie.add(categorieList)) {
+                    categories.getItems().add(categorieList);
+                }
+            }
+        });
+        
+        task.setOnSucceeded(e -> {
+            List<Document> list = task.getValue();
+
+            if (list != null && !list.isEmpty()) {
+                obsList.addAll(list);
+                offset += 20;
+                tableFiles.setItems(obsList);
+            }
+
+            initBtShowFile();
+            initBtDownload();
+            initBtDelete();
+            new Thread(task2).start();
+        });
+        
+        new Thread(task).start();
     }
-    
+
     //buttons functionsç
     private void initBtShowFile() {
         columnBtView.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
@@ -358,7 +400,7 @@ public class HomeController extends DataChangeListener implements Initializable 
             addDataTable();
         }
     }
-    
+
     @Override
     public void onDataChanged() {
         addDataTable();

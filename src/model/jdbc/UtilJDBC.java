@@ -7,16 +7,17 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CategoryJDBC {
+public class UtilJDBC {
     
     private java.sql.Connection conn;
     
-    public CategoryJDBC () {
+    public UtilJDBC () {
         if (conn == null) {
             conn = Db.getConnection();
         }
     }
     
+    // category
     public void insert(String category) {
         PreparedStatement st = null;
         try {
@@ -68,4 +69,29 @@ public class CategoryJDBC {
         return null;
     }
     
+     public int numberFiles() {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        
+        try {
+            st = conn.prepareStatement("SELECT COUNT(*) FROM files");
+            
+            rs =  st.executeQuery();
+            
+            int total = 0;
+            
+            if (rs.next()) {
+                total = rs.getInt(1);
+            }
+            
+            return total;
+        } catch (SQLException e) {
+            System.err.println("Error JDBC: "+e);
+            return 0;
+        } finally {
+            Db.closeResultSet(rs);
+            Db.closeStatement(st);
+        }
+     }
+     
 }

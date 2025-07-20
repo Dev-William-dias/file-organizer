@@ -17,6 +17,10 @@ public class DocumentService {
         return dao.findAllFileDate();
     }
     
+    public List<Document> findQuantityFileDate(int quantity, int offset) {
+        return dao.findQuantityFileDate(quantity, offset);
+    }
+    
     public void saveOrUpdate(Document obj) {
         if (obj.getId() == null) {
             dao.insert(obj);

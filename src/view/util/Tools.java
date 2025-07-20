@@ -4,15 +4,20 @@ import java.util.List;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.stage.Stage;
-import model.jdbc.CategoryJDBC;
+import model.jdbc.UtilJDBC;
 
 public class Tools {
 
     
     public static List<String> getCategory() {
-        CategoryJDBC categoryJDBC = new CategoryJDBC();
-        List<String> list = categoryJDBC.findAllCategory();
+        UtilJDBC utilJDBC = new UtilJDBC();
+        List<String> list = utilJDBC.findAllCategory();
         return list;
+    }
+    
+    public static int getNumberFiles() {
+        UtilJDBC utilJDBC = new UtilJDBC();
+       return utilJDBC.numberFiles();
     }
     
     public static Stage currentStage(ActionEvent event) {

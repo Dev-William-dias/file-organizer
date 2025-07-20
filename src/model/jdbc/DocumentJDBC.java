@@ -110,11 +110,37 @@ public class DocumentJDBC implements DocumentDao {
             return objList;
         } catch (SQLException e) {
             System.err.println("Error JDBC: "+e);
+            return null;
         } finally {
             Db.closeResultSet(rs);
             Db.closeStatement(st);
         }
-        return null;
+    }
+    
+    @Override
+    public List<Document> findQuantityFileDate(int quantity, int offset) {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        
+        try {
+            st = conn.prepareStatement("SELECT id, name, category, description, numberPages, fileSize FROM files LIMIT ? OFFSET ?");
+            st.setInt(1, quantity);
+            st.setInt(2, offset);
+            
+            rs =  st.executeQuery();
+            List<Document> objList = new ArrayList<>();
+            while(rs.next()) {
+                Document obj = new Document(rs.getInt("id"), rs.getString("name"), rs.getString("category"),rs.getString("description"), rs.getInt("numberPages"), rs.getDouble("fileSize"));
+                objList.add(obj);
+            }
+            return objList;
+        } catch (SQLException e) {
+            System.err.println("Error JDBC: "+e);
+            return null;
+        } finally {
+            Db.closeResultSet(rs);
+            Db.closeStatement(st);
+        }
     }
     
 }

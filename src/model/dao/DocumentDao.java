@@ -10,4 +10,5 @@ public interface DocumentDao {
     void deleteById(Integer id);
     byte[] findByFileId(Integer id);
     List<Document> findAllFileDate();
+    List<Document> findQuantityFileDate(int quantity, int offset);
 }
