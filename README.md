@@ -1,4 +1,5 @@
-# Organizador-de-arquivos-V2
+# Organizador de arquivos
+Aplicação desktop em JavaFX para organizar arquivos PDF. Permite cadastrar, listar, atualizar e remover documentos em uma biblioteca local, oferecendo um gerenciamento simples e intuitivo.
 
 <img src="documetacao/Capturar.png" height="400" alt="img aplicação em execução"/>
 
@@ -21,3 +22,4 @@ SQLite é um sistema de gerenciamento de banco de dados relacional leve e autoss
 3. **Compile e execute o código**.
 4. **Bibliotecas**: Certifique-se de baixar as bibliotecas necessárias.
 5. **Banco de Dados**: Se estiver usando um banco de dados diferente, modifique a classe `DB` conforme necessário.
+
