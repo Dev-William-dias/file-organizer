@@ -43,7 +43,8 @@ public class PdfTools {
             document.close();
             return image;
         } catch (IOException e) {
-            throw new RuntimeException("Erro ao carregar a pagina.");
+            Tools.log(e.getMessage());
+            throw new RuntimeException(e);
         }
     }
 
@@ -55,7 +56,8 @@ public class PdfTools {
             }
             return counter;
         } catch (IOException e) {
-            throw new RuntimeException("Erro ao carregar o numero de paginas.");
+            Tools.log(e.getMessage());
+            throw new RuntimeException(e);
         } 
     }
     
@@ -82,7 +84,7 @@ public class PdfTools {
             }
 
         } catch (IOException e) {
-            throw new RuntimeException("Erro ao tentar realizar o download do arquivo. " + e);
+            Tools.log(e.getMessage());
         }
     }
 }

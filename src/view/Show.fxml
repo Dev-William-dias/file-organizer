@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="rootPanel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="0.0" minWidth="0.0" prefHeight="800.0" prefWidth="1225.0" stylesheets="@Styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.ShowFileController">
+<AnchorPane fx:id="rootPanel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="0.0" minWidth="0.0" prefHeight="800.0" prefWidth="1225.0" stylesheets="@Styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ShowController">
    <children>
       <ImageView fx:id="backgroundImage" fitHeight="800.0" fitWidth="1225.0" pickOnBounds="true" />
       <ScrollPane fx:id="scrollPaneView" prefHeight="625.0" prefWidth="850.0" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
@@ -32,9 +32,9 @@
                   </ImageView>
                </graphic>
             </Button>
-            <Label fx:id="labelPageNumber" text="0/0" textFill="WHITE">
+            <Label fx:id="labelPageNumber" alignment="CENTER" prefHeight="52.0" prefWidth="79.0" text="0/0" textFill="WHITE">
                <HBox.margin>
-                  <Insets left="5.0" right="5.0" />
+                  <Insets left="10.0" right="10.0" />
                </HBox.margin>
                <font>
                   <Font name="System Bold" size="36.0" />

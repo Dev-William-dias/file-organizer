@@ -1,4 +1,4 @@
-package view;
+package controller;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -10,9 +10,11 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import model.entities.Document;
+import view.util.Alert;
 import view.util.PdfTools;
+import view.util.Tools;
 
-public class ShowFileController implements Initializable {
+public class ShowController implements Initializable {
 
     private int page = 0;
     private Document document;
@@ -40,7 +42,8 @@ public class ShowFileController implements Initializable {
         try {
             showFile();
         } catch (Exception e) {
-            System.err.println("Erro ao carregar documento: " + e.getMessage());
+            Alert.showAlert("Erro", "", "Erro ao carregar documento.", javafx.scene.control.Alert.AlertType.WARNING);
+            Tools.log(e.getMessage());
         }
     }
 

@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="445.0" prefWidth="400.0" stylesheets="@Styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.AddEditController">
+<AnchorPane id="AnchorPane" prefHeight="445.0" prefWidth="400.0" stylesheets="@Styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AddEditController">
    <children>
       <ImageView fitHeight="445.0" fitWidth="400.0" pickOnBounds="true">
          <image>

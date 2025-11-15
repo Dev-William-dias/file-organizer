@@ -1,9 +1,7 @@
-package view;
+package controller;
 
-import application.Main;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +25,7 @@ import javafx.scene.control.ScrollBar;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
@@ -86,130 +85,50 @@ public class HomeController extends DataChangeListener implements Initializable 
     private Label labelFileSize;
 
     @FXML
-    private Label labelDescription;
+    private TextArea txtaDescription;
 
     @FXML
     private TextField txtSearch;
 
     private ObservableList<Document> obsList = FXCollections.observableArrayList();
 
+    public void setStage(Stage stage) {
+        this.stage = stage;
+    }
+    
     //Show Windows
     public void onBtWindowSave() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("AddFile.fxml"));
-            AnchorPane anchorPane = loader.load();
-
-            AddEditController controller = loader.getController();
-            controller.setDatas(service, null);
-            controller.subscriberDataChangeListener(this);
-
-            Stage dialogStage = new Stage();
-            dialogStage.setTitle("Adicionar novo arquivo");
-            dialogStage.getIcons().add(new Image(getClass().getResourceAsStream("/view/imgs/icons/researchBooks.png")));
-            dialogStage.setScene(new Scene(anchorPane));
-            dialogStage.setResizable(false);
-            dialogStage.initOwner(stage);
-            dialogStage.initModality(Modality.WINDOW_MODAL);
-            dialogStage.showAndWait();
-        } catch (IOException e) {
-            Alert.showAlert("Erro", "", e.toString(), javafx.scene.control.Alert.AlertType.WARNING);
-        }
+        showWindow("/view/Add.fxml", "Adicionar novo arquivo", "add", null);
     }
 
     public void onBtWindowsEdit() {
-        if (obj != null) {
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("EditDescription.fxml"));
-                AnchorPane anchorPane = loader.load();
-
-                AddEditController controller = loader.getController();
-                controller.setDatas(service, obj);
-                controller.subscriberDataChangeListener(this);
-
-                Stage dialogStage = new Stage();
-                dialogStage.setTitle("Editar a arquivo");
-                dialogStage.getIcons().add(new Image(getClass().getResourceAsStream("/view/imgs/icons/researchBooks.png")));
-                dialogStage.setScene(new Scene(anchorPane));
-                dialogStage.setResizable(false);
-                dialogStage.initOwner(stage);
-                dialogStage.initModality(Modality.WINDOW_MODAL);
-                dialogStage.showAndWait();
-            } catch (IOException e) {
-                Alert.showAlert("Erro", "", e.toString(), javafx.scene.control.Alert.AlertType.WARNING);
-            }
-        }
+        showWindow("/view/Edit.fxml", "Editar a arquivo","edit" , null);
     }
 
     public void onBtWindowSettings() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("Settings.fxml"));
-            AnchorPane anchorPane = loader.load();
-
-            Stage dialogStage = new Stage();
-            dialogStage.setTitle("Configurações");
-            dialogStage.getIcons().add(new Image(getClass().getResourceAsStream("/view/imgs/icons/researchBooks.png")));
-            dialogStage.setScene(new Scene(anchorPane));
-            dialogStage.setResizable(false);
-            dialogStage.initOwner(stage);
-            dialogStage.initModality(Modality.WINDOW_MODAL);
-            dialogStage.showAndWait();
-        } catch (IOException e) {
-            Alert.showAlert("Erro", "", e.toString(), javafx.scene.control.Alert.AlertType.WARNING);
-        }
+        showWindow("/view/Settings.fxml", "Configurações", "settings", null);
     }
 
     public void onBtSearch() {
-        tableFiles.getItems().clear();
-        progressView.setVisible(true);
-        String search = txtSearch.getText();
-        String categorie = categories.getValue();
-
-        List<Document> documents = service.findAllFileDate();
-
-        List<Document> list = new ArrayList<>();
-
-        if (categorie != null && !"Categoria".equals(categorie)) {
-            for (Document d : documents) {
-                if (categorie.equals(d.getCategory())) {
-                    list.add(d);
-                }
-            }
-        } else if (search.isEmpty()) {
-            for (Document d : documents) {
-
-                if (d.getName().equals(search)) {
-                    list.add(d);
-                }
-
-            }
+        if (!txtSearch.getText().equals("")) {
+            
         }
-
-        if (!list.isEmpty()) {
-            obsList = FXCollections.observableArrayList(list);
-            tableFiles.setItems(obsList);
-        } else {
-            Alert.showAlert("Info", "", "Arquivo não emcontrado.", javafx.scene.control.Alert.AlertType.INFORMATION);
-            addDataTable();
-        }
-
-        progressView.setVisible(false);
     }
 
-    public void onBtupdateTable() {
-        addDataTable();
+    public void onBtnUpdate() {
+        updateData();
     }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         initializerNodes();
-        stage = Main.getStage();
-
+        
         //pega os dados do objeto da tabela
         tableFiles.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, selection) -> {
             if (selection != null) {
                 labelNumberPage.setText("Numero de Paginas: " + selection.getNumberPages());
                 labelFileSize.setText("Tamanho do Arquivo: " + Tools.convertionSize(selection.getFileSize()));
-                labelDescription.setText("" + selection.getDescription());
+                txtaDescription.setText(" " + selection.getDescription());
                 obj = selection;
             }
         });
@@ -219,47 +138,60 @@ public class HomeController extends DataChangeListener implements Initializable 
             ScrollBar scrollBar = (ScrollBar) tableFiles.lookup(".scroll-bar:vertical");
             scrollBar.valueProperty().addListener((o, oldVal, newVal) -> {
                 if (newVal.doubleValue() == scrollBar.getMax()) {
-                    addDataTable();
+                    updateTable();
                 }
             });
         });
     }
 
-    private void initializerNodes() {
+    private void initializerNodes() {   
         columnId.setCellValueFactory(new PropertyValueFactory<>("id"));
         columnName.setCellValueFactory(new PropertyValueFactory<>("name"));
         columnCategory.setCellValueFactory(new PropertyValueFactory<>("category"));
-        addDataTable();
-        progressView.setVisible(false);
-        labelTotalFiles.setText("Total de Arquivos: " + Tools.getNumberFiles());
+        updateData();
     }
 
-    private void addDataTable() {
-        Task<List<Document>> task = new Task<>() {
+    private void updateData() {
+        updateCategories();
+        updateTable();
+        labelTotalFiles.setText("Total de Arquivos: " + Tools.getNumberFiles());
+    }
+    
+    private void updateCategories() {
+        Task<List<String>>  loadCategories = new Task<>() {
             @Override
-            protected List<Document> call() {
-                return service.findQuantityFileDate(20, offset);
+            protected List<String> call() {
+                return Tools.getCategory();
             }
         };
-
-        Task<List<String>> task2 = new Task<>() {
-            @Override
-            protected List<String> call() throws Exception {
-               return Tools.getCategory();
-            }   
-        };
         
-        task2.setOnSucceeded(e -> {
+        loadCategories.setOnSucceeded(e -> {
             Set<String> existCategorie = new HashSet<>(categories.getItems());
-            for (String categorieList : task2.getValue()) {
+            for (String categorieList : loadCategories.getValue()) {
                 if (existCategorie.add(categorieList)) {
                     categories.getItems().add(categorieList);
                 }
             }
         });
         
-        task.setOnSucceeded(e -> {
-            List<Document> list = task.getValue();
+        new Thread(loadCategories).start();
+    }
+    
+    private void updateTable() {
+        progressView.setVisible(true);
+        Task<List<Document>> loadDataFile = new Task<>() {
+            @Override
+            protected List<Document> call() {    
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                }
+                return service.findQuantityFileDate(20, offset);
+            }
+        };
+
+        loadDataFile.setOnSucceeded(e -> {
+            List<Document> list = loadDataFile.getValue();
 
             if (list != null && !list.isEmpty()) {
                 obsList.addAll(list);
@@ -270,10 +202,11 @@ public class HomeController extends DataChangeListener implements Initializable 
             initBtShowFile();
             initBtDownload();
             initBtDelete();
-            new Thread(task2).start();
+            labelTotalFiles.setText("Total de Arquivos: " + Tools.getNumberFiles());
+            progressView.setVisible(false);
         });
-        
-        new Thread(task).start();
+
+        new Thread(loadDataFile).start();
     }
 
     //buttons functionsç
@@ -303,7 +236,7 @@ public class HomeController extends DataChangeListener implements Initializable 
 
                 setAlignment(Pos.CENTER);
                 setGraphic(button);
-                button.setOnAction(event -> createDialogFormFile(obj));
+                button.setOnAction(event -> showWindow("/view/Show.fxml", "edit", obj.getName(), obj));
             }
         });
     }
@@ -370,39 +303,52 @@ public class HomeController extends DataChangeListener implements Initializable 
         });
     }
 
-    private void createDialogFormFile(Document obj) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("ShowFile.fxml"));
-            AnchorPane anchorPane = loader.load();
-
-            ShowFileController controller = loader.getController();
-            controller.setDocument(obj, service.findByFileId(obj.getId()));
-
-            Stage dialogStage = new Stage();
-            dialogStage.setTitle(obj.getName());
-            dialogStage.setScene(new Scene(anchorPane));
-            dialogStage.getIcons().add(new Image(getClass().getResourceAsStream("/view/imgs/icons/researchBooks.png")));
-            dialogStage.initModality(Modality.WINDOW_MODAL);
-            dialogStage.showAndWait();
-        } catch (IOException e) {
-            Alert.showAlert("Erro", "", e.toString(), javafx.scene.control.Alert.AlertType.WARNING);
-        }
-    }
-
     private void removeEntity(Document obj) {
         Optional<ButtonType> result = Alert.showConfirmation("Confirmação", "Tem certeza de que deseja excluir?");
         if (result.get() == ButtonType.OK) {
             if (service == null) {
                 throw new IllegalStateException("Service was null");
             }
-
             service.deleteById(obj.getId());
-            addDataTable();
+        }
+        updateTable();
+    }
+
+    private void showWindow(String fileName, String title, String option, Document doc) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fileName));
+            AnchorPane anchorPane = loader.load();
+
+            Object controller = loader.getController();
+
+
+            if (controller instanceof AddEditController aec) {
+                if (obj != null && option == "edit") {
+                    aec.setDatas(service, obj);
+                } else {
+                    aec.setDatas(service, null);
+                }
+                aec.subscriberDataChangeListener(this);
+            } else if (controller instanceof ShowController sfc) {
+                sfc.setDocument(doc, service.findByFileId(doc.getId()));
+            }
+
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle(title);
+            dialogStage.getIcons().add(new Image(getClass().getResourceAsStream("/view/imgs/icons/researchBooks.png")));
+            dialogStage.setScene(new Scene(anchorPane));
+            dialogStage.setResizable(false);
+            dialogStage.initOwner(stage);
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.showAndWait();
+        } catch (IOException e) {
+            Alert.showAlert("Erro", "", "Error ao mostrar arquivo.", javafx.scene.control.Alert.AlertType.WARNING);
+            Tools.log(e.getMessage());
         }
     }
 
     @Override
     public void onDataChanged() {
-        addDataTable();
+        updateData();
     }
 }

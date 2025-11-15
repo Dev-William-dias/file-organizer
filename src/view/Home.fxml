@@ -10,6 +10,7 @@
 <?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -18,7 +19,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="800.0" prefWidth="700.0" stylesheets="@Styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.HomeController">
+<AnchorPane id="AnchorPane" prefHeight="800.0" prefWidth="700.0" stylesheets="@Styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.HomeController">
    <children>
       <ImageView fitHeight="775.0" fitWidth="700.0" layoutY="26.0" pickOnBounds="true" smooth="false">
          <image>
@@ -102,14 +103,10 @@
                   <Font size="16.0" />
                </font>
             </Label>
-            <Label fx:id="labelDescription" layoutX="93.0" layoutY="52.0" prefHeight="62.0" prefWidth="565.0" textAlignment="JUSTIFY" textFill="WHITE" wrapText="true">
-               <font>
-                  <Font size="16.0" />
-               </font>
-            </Label>
             <Button layoutX="619.0" layoutY="14.0" mnemonicParsing="false" onAction="#onBtWindowsEdit" text="Edit" />
+            <TextArea fx:id="txtaDescription" editable="false" layoutX="107.0" layoutY="51.0" opacity="0.5" prefHeight="62.0" prefWidth="553.0" wrapText="true" />
          </children>
       </Pane>
-      <Button layoutX="589.0" layoutY="44.0" mnemonicParsing="false" onAction="#onBtupdateTable" prefHeight="27.0" prefWidth="96.0" text="Atualizar" />
+      <Button layoutX="589.0" layoutY="44.0" mnemonicParsing="false" onAction="#onBtnUpdate" prefHeight="27.0" prefWidth="96.0" text="Atualizar" />
    </children>
 </AnchorPane>

@@ -1,5 +1,8 @@
 package view.util;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
@@ -16,7 +19,7 @@ public class Tools {
     }
     
     public static int getNumberFiles() {
-        UtilJDBC utilJDBC = new UtilJDBC();
+       UtilJDBC utilJDBC = new UtilJDBC();
        return utilJDBC.numberFiles();
     }
     
@@ -31,6 +34,18 @@ public class Tools {
             return String.format("%.2f KB", (double) bytes / 1024);
         } else {
             return bytes + " Bytes";
+        }
+    }
+    
+    public static void log(String error) {
+        File fileLog = new File("fileLog.txt");  
+        try {
+            FileWriter saveLog = new FileWriter(fileLog, true);
+            String data = java.time.LocalDateTime.now().toString();
+            saveLog.write("\n" + data + ": "+ error);
+            saveLog.close();
+        } catch (IOException e) {
+            throw new RuntimeException("Error creating log file. \n"+e.getMessage());
         }
     }
 }
