@@ -1,5 +1,6 @@
 package controller;
 
+import application.Main;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashSet;
@@ -43,8 +44,8 @@ import view.util.Tools;
 public class HomeController extends DataChangeListener implements Initializable {
 
     private final DocumentService service = new DocumentService();
-    private Stage stage;
     private Document obj = null;
+    private boolean toUpdate = true;
 
     private int offset = 0;
 
@@ -91,10 +92,6 @@ public class HomeController extends DataChangeListener implements Initializable 
     private TextField txtSearch;
 
     private ObservableList<Document> obsList = FXCollections.observableArrayList();
-
-    public void setStage(Stage stage) {
-        this.stage = stage;
-    }
     
     //Show Windows
     public void onBtWindowSave() {
@@ -111,11 +108,15 @@ public class HomeController extends DataChangeListener implements Initializable 
 
     public void onBtSearch() {
         if (!txtSearch.getText().equals("")) {
-            
+            toUpdate = false;
+            updateTable(txtSearch.getText());
         }
     }
 
     public void onBtnUpdate() {
+        tableFiles.getItems().clear();
+        offset = 0;
+        toUpdate = true;
         updateData();
     }
 
@@ -133,12 +134,19 @@ public class HomeController extends DataChangeListener implements Initializable 
             }
         });
 
+        categories.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, selection) -> {
+            if (selection != null) {
+                toUpdate = false;
+                updateTable(selection);
+            }
+        });
+        
         //carrega mais dados na tabela
         tableFiles.skinProperty().addListener((obs, oldSkin, newSkin) -> {
             ScrollBar scrollBar = (ScrollBar) tableFiles.lookup(".scroll-bar:vertical");
             scrollBar.valueProperty().addListener((o, oldVal, newVal) -> {
                 if (newVal.doubleValue() == scrollBar.getMax()) {
-                    updateTable();
+                    updateTable("");
                 }
             });
         });
@@ -153,7 +161,7 @@ public class HomeController extends DataChangeListener implements Initializable 
 
     private void updateData() {
         updateCategories();
-        updateTable();
+        updateTable("");
         labelTotalFiles.setText("Total de Arquivos: " + Tools.getNumberFiles());
     }
     
@@ -177,8 +185,11 @@ public class HomeController extends DataChangeListener implements Initializable 
         new Thread(loadCategories).start();
     }
     
-    private void updateTable() {
-        progressView.setVisible(true);
+    private void updateTable(String searchFor) {
+        if (toUpdate == true || !searchFor.equals("")) {
+           progressView.setVisible(true); 
+        }
+        
         Task<List<Document>> loadDataFile = new Task<>() {
             @Override
             protected List<Document> call() {    
@@ -205,8 +216,40 @@ public class HomeController extends DataChangeListener implements Initializable 
             labelTotalFiles.setText("Total de Arquivos: " + Tools.getNumberFiles());
             progressView.setVisible(false);
         });
-
-        new Thread(loadDataFile).start();
+        
+        Task<List<Document>> loadSurveyData = new Task<>() {
+            @Override
+            protected List<Document> call() {    
+                try {
+                    tableFiles.getItems().clear();
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                }
+                return service.searchFiles(searchFor);
+            }
+        };
+        
+        loadSurveyData.setOnSucceeded(e -> {
+            List<Document> list = loadSurveyData.getValue();
+            
+            if (list != null && !list.isEmpty()) {
+                obsList.addAll(list);
+                tableFiles.setItems(obsList);
+            }
+            
+            initBtShowFile();
+            initBtDownload();
+            initBtDelete();
+            progressView.setVisible(false);
+        });
+        
+        if (searchFor.equals("")) {
+            if (toUpdate) {
+                new Thread(loadDataFile).start();
+            } 
+        } else {
+            new Thread(loadSurveyData).start();
+        }
     }
 
     //buttons functionsç
@@ -236,7 +279,7 @@ public class HomeController extends DataChangeListener implements Initializable 
 
                 setAlignment(Pos.CENTER);
                 setGraphic(button);
-                button.setOnAction(event -> showWindow("/view/Show.fxml", "edit", obj.getName(), obj));
+                button.setOnAction(event -> showWindow("/view/Show.fxml", "show", obj.getName(), obj));
             }
         });
     }
@@ -267,7 +310,7 @@ public class HomeController extends DataChangeListener implements Initializable 
 
                 setAlignment(Pos.CENTER);
                 setGraphic(button);
-                button.setOnAction((event) -> PdfTools.downloadFile(service.findByFileId(obj.getId()), obj.getName(), stage));
+                button.setOnAction((event) -> PdfTools.downloadFile(service.findByFileId(obj.getId()), obj.getName(), Main.getStage()));
             }
         });
     }
@@ -311,7 +354,7 @@ public class HomeController extends DataChangeListener implements Initializable 
             }
             service.deleteById(obj.getId());
         }
-        updateTable();
+        updateTable("");
     }
 
     private void showWindow(String fileName, String title, String option, Document doc) {
@@ -320,10 +363,10 @@ public class HomeController extends DataChangeListener implements Initializable 
             AnchorPane anchorPane = loader.load();
 
             Object controller = loader.getController();
-
-
+            boolean resizable = false;
+            
             if (controller instanceof AddEditController aec) {
-                if (obj != null && option == "edit") {
+                if (obj != null && option.equals("edit")) {
                     aec.setDatas(service, obj);
                 } else {
                     aec.setDatas(service, null);
@@ -331,16 +374,16 @@ public class HomeController extends DataChangeListener implements Initializable 
                 aec.subscriberDataChangeListener(this);
             } else if (controller instanceof ShowController sfc) {
                 sfc.setDocument(doc, service.findByFileId(doc.getId()));
+                resizable = true;
             }
 
             Stage dialogStage = new Stage();
             dialogStage.setTitle(title);
             dialogStage.getIcons().add(new Image(getClass().getResourceAsStream("/view/imgs/icons/researchBooks.png")));
             dialogStage.setScene(new Scene(anchorPane));
-            dialogStage.setResizable(false);
-            dialogStage.initOwner(stage);
-            dialogStage.initModality(Modality.WINDOW_MODAL);
-            dialogStage.showAndWait();
+            dialogStage.setResizable(resizable);
+            dialogStage.initModality(Modality.NONE);
+            dialogStage.show();
         } catch (IOException e) {
             Alert.showAlert("Erro", "", "Error ao mostrar arquivo.", javafx.scene.control.Alert.AlertType.WARNING);
             Tools.log(e.getMessage());

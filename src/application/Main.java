@@ -23,10 +23,7 @@ public class Main extends Application {
             stage = primaryStage;
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Home.fxml"));
             AnchorPane anchorPane = loader.load();
-            
-            HomeController controller = new HomeController();
-            controller.setStage(stage);
-            
+    
             mainScene = new Scene(anchorPane);
             primaryStage.setScene(mainScene);
             primaryStage.setResizable(false);

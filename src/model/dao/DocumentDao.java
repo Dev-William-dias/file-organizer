@@ -11,4 +11,6 @@ public interface DocumentDao {
     byte[] findByFileId(Integer id);
     List<Document> findAllFileDate();
     List<Document> findQuantityFileDate(int quantity, int offset);
+    List<Document> searchFiles(String searchFor);
+    
 }

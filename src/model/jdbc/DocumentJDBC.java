@@ -143,4 +143,30 @@ public class DocumentJDBC implements DocumentDao {
         }
     }
     
+    public List<Document> searchFiles(String searchFor) {
+         PreparedStatement st = null;
+        ResultSet rs = null;
+        
+        try {
+            st = conn.prepareStatement("SELECT id, name, category, description, numberPages, fileSize FROM files WHERE category LIKE ? OR name LIKE ? OR id = ?");
+            st.setString(1, "%" + searchFor + "%");
+            st.setString(2, "%" + searchFor + "%");
+            st.setString(3, searchFor);
+            
+            rs =  st.executeQuery();
+            List<Document> objList = new ArrayList<>();
+            while(rs.next()) {
+                Document obj = new Document(rs.getInt("id"), rs.getString("name"), rs.getString("category"),rs.getString("description"), rs.getInt("numberPages"), rs.getDouble("fileSize"));
+                objList.add(obj);
+            }
+            return objList;
+        } catch (SQLException e) {
+            System.err.println("Error JDBC: "+e);
+            return null;
+        } finally {
+            Db.closeResultSet(rs);
+            Db.closeStatement(st);
+        }
+    }
+    
 }
