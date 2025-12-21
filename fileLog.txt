@@ -1,0 +1,14 @@
+
+2025-12-20T20:48:47.871763960: Error resolving onAction='#onBtnSstartConnection', either the event handler is not in the Namespace or there is an error in the script.
+/home/anonymous/NetBeansProjects/file-organizer/build/classes/view/Synchronize.fxml:45
+
+2025-12-20T20:49:29.854824054: Error resolving onAction='#onBtnStartConnection', either the event handler is not in the Namespace or there is an error in the script.
+/home/anonymous/NetBeansProjects/file-organizer/build/classes/view/Synchronize.fxml:45
+
+2025-12-20T20:50:04.110096425: Error resolving onAction='#onBtnReceiveConnection', either the event handler is not in the Namespace or there is an error in the script.
+/home/anonymous/NetBeansProjects/file-organizer/build/classes/view/Synchronize.fxml:83
+
+2025-12-20T22:24:58.009453516: Conexão recusada
+2025-12-20T22:25:45.209595958: Conexão recusada
+2025-12-20T23:14:43.450109828: Tempo esgotado para conexão
+2025-12-20T23:15:28.505135606: Tempo esgotado para conexão

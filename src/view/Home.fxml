@@ -30,8 +30,8 @@
         <menus>
           <Menu mnemonicParsing="false" text="Opçoes">
             <items>
-              <MenuItem mnemonicParsing="false" onAction="#onBtWindowSettings" text="Configurações" />
-                  <MenuItem mnemonicParsing="false" text="Sobre" />
+              <MenuItem mnemonicParsing="false" onAction="#onBtWindowAddCategory" text="Adicionar Categoria" />
+                  <MenuItem mnemonicParsing="false" onAction="#onBtWindowSynchronize" text="Sincronizar" />
             </items>
           </Menu>
         </menus>

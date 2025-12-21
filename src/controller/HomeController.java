@@ -102,10 +102,14 @@ public class HomeController extends DataChangeListener implements Initializable 
         showWindow("/view/Edit.fxml", "Editar a arquivo","edit" , null);
     }
 
-    public void onBtWindowSettings() {
-        showWindow("/view/Settings.fxml", "Configurações", "settings", null);
+    public void onBtWindowAddCategory() {
+        showWindow("/view/AddCategory.fxml", "Adicionar categorias", "category", null);
     }
 
+    public void onBtWindowSynchronize() {
+        showWindow("/view/Synchronize.fxml", "Sincronizar arquivos", "synchronize", null);
+    }
+    
     public void onBtSearch() {
         if (!txtSearch.getText().equals("")) {
             toUpdate = false;

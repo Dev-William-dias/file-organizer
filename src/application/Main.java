@@ -1,6 +1,5 @@
 package application;
 
-import controller.HomeController;
 import java.io.IOException;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -27,7 +26,7 @@ public class Main extends Application {
             mainScene = new Scene(anchorPane);
             primaryStage.setScene(mainScene);
             primaryStage.setResizable(false);
-            primaryStage.setTitle("Home");
+            primaryStage.setTitle("Organizador de arquivos");
             primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/view/imgs/icons/researchBooks.png")));
             primaryStage.show();
         } catch (IOException e) {

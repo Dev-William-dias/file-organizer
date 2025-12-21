@@ -12,7 +12,7 @@ import model.jdbc.UtilJDBC;
 import view.util.Alert;
 import view.util.Tools;
 
-public class SettingsController implements Initializable {
+public class AddCategoryController implements Initializable {
 
     private final UtilJDBC utilJDBC = new UtilJDBC();
     
