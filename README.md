@@ -2,7 +2,7 @@
 
 Aplicação desktop em JavaFX para gerenciamento de arquivos PDF, permitindo cadastrar, listar, atualizar e remover documentos em uma biblioteca local.
 
-<img src="documetacao/Capturar.png" height="400" alt="img aplicação em execução"/>
+<img src="documetacao/capturar.png" height="400" alt="img aplicação em execução"/>
 
 ---
 
@@ -12,9 +12,7 @@ Aplicação desktop em JavaFX para gerenciamento de arquivos PDF, permitindo cad
 
 - Atualização e remoção de registros
 
-- Armazenamento local com banco de dados SQLite
-
-- Manipulação de PDFs (extração e leitura via PDFBox)
+- Armazenamento local
 
 ---
 

@@ -31,7 +31,6 @@
           <Menu mnemonicParsing="false" text="Opçoes">
             <items>
               <MenuItem mnemonicParsing="false" onAction="#onBtWindowAddCategory" text="Adicionar Categoria" />
-                  <MenuItem mnemonicParsing="false" onAction="#onBtWindowSynchronize" text="Sincronizar" />
             </items>
           </Menu>
         </menus>
@@ -39,11 +38,10 @@
       <TableView fx:id="tableFiles" layoutX="15.0" layoutY="267.0" opacity="0.8" prefHeight="520.0" prefWidth="670.0">
         <columns>
           <TableColumn fx:id="columnId" prefWidth="60.0" text="Id" />
-          <TableColumn fx:id="columnName" prefWidth="245.0" text="Nome" />
-            <TableColumn fx:id="columnCategory" prefWidth="213.0" text="Categoria" />
-            <TableColumn fx:id="columnBtView" editable="false" maxWidth="42.0" minWidth="40.0" prefWidth="42.0" resizable="false" />
-            <TableColumn fx:id="columnBtDownload" maxWidth="42.0" minWidth="40.0" prefWidth="42.0" />
-            <TableColumn fx:id="columnBtRemover" maxWidth="42.0" minWidth="40.0" prefWidth="42.0" resizable="false" />
+          <TableColumn fx:id="columnName" prefWidth="363.0" text="Nome" />
+            <TableColumn fx:id="columnCategory" prefWidth="145.0" text="Categoria" />
+            <TableColumn fx:id="columnBtDownload" maxWidth="125.0" minWidth="0.0" prefWidth="40.0" resizable="false" />
+            <TableColumn fx:id="columnBtRemover" maxWidth="109.0" minWidth="18.0" prefWidth="40.0" resizable="false" />
         </columns>
       </TableView>
       <HBox alignment="CENTER" layoutX="15.0" layoutY="204.0" prefHeight="50.0" prefWidth="670.0">

@@ -6,23 +6,12 @@ public class Document {
     private String name;
     private String category;
     private String description;
-    private byte[] file;
     private Integer numberPages;
     private Double fileSize;
     
     public Document() {
     }
 
-    public Document(Integer id, String name, String category, String description, byte[] file, Integer numberPages, Double fileSize) {
-        this.id = id;
-        this.name = name;
-        this.category = category;
-        this.description = description;
-        this.file = file;
-        this.numberPages = numberPages;
-        this.fileSize = fileSize;
-    }
-    
     public Document(Integer id, String name, String category, String description, Integer numberPages, Double fileSize) {
         this.id = id;
         this.name = name;
@@ -31,7 +20,7 @@ public class Document {
         this.numberPages = numberPages;
         this.fileSize = fileSize;
     }
-
+    
     public Integer getId() {
         return id;
     }
@@ -62,14 +51,6 @@ public class Document {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public byte[] getFile() {
-        return file;
-    }
-
-    public void setFile(byte[] file) {
-        this.file = file;
     }
 
     public Integer getNumberPages() {

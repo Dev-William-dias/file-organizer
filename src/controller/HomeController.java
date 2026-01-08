@@ -62,9 +62,6 @@ public class HomeController extends DataChangeListener implements Initializable 
     private TableColumn<Document, String> columnCategory;
 
     @FXML
-    private TableColumn<Document, Document> columnBtView;
-
-    @FXML
     private TableColumn<Document, Document> columnBtDownload;
 
     @FXML
@@ -95,21 +92,17 @@ public class HomeController extends DataChangeListener implements Initializable 
     
     //Show Windows
     public void onBtWindowSave() {
-        showWindow("/view/Add.fxml", "Adicionar novo arquivo", "add", null);
+        showWindow("/view/Add.fxml", "Adicionar novo arquivo", "add");
     }
 
     public void onBtWindowsEdit() {
-        showWindow("/view/Edit.fxml", "Editar a arquivo","edit" , null);
+        showWindow("/view/Edit.fxml", "Editar a arquivo","edit");
     }
 
     public void onBtWindowAddCategory() {
-        showWindow("/view/AddCategory.fxml", "Adicionar categorias", "category", null);
+        showWindow("/view/AddCategory.fxml", "Adicionar categorias", "category");
     }
 
-    public void onBtWindowSynchronize() {
-        showWindow("/view/Synchronize.fxml", "Sincronizar arquivos", "synchronize", null);
-    }
-    
     public void onBtSearch() {
         if (!txtSearch.getText().equals("")) {
             toUpdate = false;
@@ -214,7 +207,6 @@ public class HomeController extends DataChangeListener implements Initializable 
                 tableFiles.setItems(obsList);
             }
 
-            initBtShowFile();
             initBtDownload();
             initBtDelete();
             labelTotalFiles.setText("Total de Arquivos: " + Tools.getNumberFiles());
@@ -241,7 +233,6 @@ public class HomeController extends DataChangeListener implements Initializable 
                 tableFiles.setItems(obsList);
             }
             
-            initBtShowFile();
             initBtDownload();
             initBtDelete();
             progressView.setVisible(false);
@@ -257,37 +248,6 @@ public class HomeController extends DataChangeListener implements Initializable 
     }
 
     //buttons functionsç
-    private void initBtShowFile() {
-        columnBtView.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
-        columnBtView.setCellFactory(param -> new TableCell<Document, Document>() {
-            private final Button button = new Button();
-            private final ImageView icon = new ImageView(new Image("/view/imgs/icons/view.png"));
-
-            {
-                icon.setFitWidth(20);
-                icon.setFitHeight(20);
-
-                button.setGraphic(icon);
-                button.setPrefWidth(30);
-                button.setPrefHeight(30);
-            }
-
-            @Override
-            protected void updateItem(Document obj, boolean empty) {
-                super.updateItem(obj, empty);
-
-                if (obj == null) {
-                    setGraphic(null);
-                    return;
-                }
-
-                setAlignment(Pos.CENTER);
-                setGraphic(button);
-                button.setOnAction(event -> showWindow("/view/Show.fxml", "show", obj.getName(), obj));
-            }
-        });
-    }
-
     private void initBtDownload() {
         columnBtDownload.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
         columnBtDownload.setCellFactory(param -> new TableCell<Document, Document>() {
@@ -314,7 +274,7 @@ public class HomeController extends DataChangeListener implements Initializable 
 
                 setAlignment(Pos.CENTER);
                 setGraphic(button);
-                button.setOnAction((event) -> PdfTools.downloadFile(service.findByFileId(obj.getId()), obj.getName(), Main.getStage()));
+                button.setOnAction((event) -> PdfTools.getFile(service.findByFileId(obj.getId()), Main.getStage()));
             }
         });
     }
@@ -356,12 +316,16 @@ public class HomeController extends DataChangeListener implements Initializable 
             if (service == null) {
                 throw new IllegalStateException("Service was null");
             }
-            service.deleteById(obj.getId());
-        }
-        updateTable("");
+            if (PdfTools.deleteFile("AllFiles/" + obj.getName() + ".pdf")) {
+                service.deleteById(obj.getId());
+                updateData();
+            } else {
+               Alert.showAlert("Erro", "", "Error ao excluir arquivo", javafx.scene.control.Alert.AlertType.WARNING); 
+            }  
+        }  
     }
 
-    private void showWindow(String fileName, String title, String option, Document doc) {
+    private void showWindow(String fileName, String title, String option) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fileName));
             AnchorPane anchorPane = loader.load();
@@ -376,11 +340,8 @@ public class HomeController extends DataChangeListener implements Initializable 
                     aec.setDatas(service, null);
                 }
                 aec.subscriberDataChangeListener(this);
-            } else if (controller instanceof ShowController sfc) {
-                sfc.setDocument(doc, service.findByFileId(doc.getId()));
-                resizable = true;
-            }
-
+            } 
+            
             Stage dialogStage = new Stage();
             dialogStage.setTitle(title);
             dialogStage.getIcons().add(new Image(getClass().getResourceAsStream("/view/imgs/icons/researchBooks.png")));

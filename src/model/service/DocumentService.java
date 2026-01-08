@@ -9,7 +9,7 @@ public class DocumentService {
     
     private DocumentDao dao = DaoFactory.createDocumentDao();
     
-    public byte[] findByFileId(int id) {
+    public String findByFileId(int id) {
         return dao.findByFileId(id);
     }
     

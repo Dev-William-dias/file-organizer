@@ -1,52 +1,15 @@
 package view.util;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.image.Image;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.rendering.PDFRenderer;
 
 public class PdfTools {
-
-    public static byte[] convertToByte(File file) {
-        try {
-            FileInputStream fis = new FileInputStream(file);
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-
-            while ((bytesRead = fis.read(buffer)) != -1) {
-                baos.write(buffer, 0, bytesRead);
-            }
-            return baos.toByteArray();
-        } catch (IOException e) {
-            System.err.println("Error pdfTools: " + e);
-            return null;
-        }
-    }
-
-    public static Image renderFirstPage(int page,byte[] pdfByte) {
-        try (PDDocument document = PDDocument.load(new ByteArrayInputStream(pdfByte))) {
-            PDFRenderer renderer = new PDFRenderer(document);
-            BufferedImage bi = renderer.renderImageWithDPI(page, 150);
-            Image image = SwingFXUtils.toFXImage(bi, null);
-            bi.flush();
-            document.close();
-            return image;
-        } catch (IOException e) {
-            Tools.log(e.getMessage());
-            throw new RuntimeException(e);
-        }
-    }
 
     public static int getPageCounter(File file) {
         try {
@@ -58,33 +21,83 @@ public class PdfTools {
         } catch (IOException e) {
             Tools.log(e.getMessage());
             throw new RuntimeException(e);
-        } 
+        }
     }
-    
-    public static File LoadFile(Stage stage) {
+
+    public static File loadFile(Stage stage) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Selecionar arquivo");
+
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+
         FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("Arquivos PDF", "*.pdf");
+        
         fileChooser.getExtensionFilters().add(filter);
+
         return fileChooser.showOpenDialog(stage);
     }
 
-    public static void downloadFile(byte[] pdf, String name, Stage stage) {
+    public static boolean existFile(String name) {
+        Path base = Path.of("").toAbsolutePath().resolve("AllFiles").resolve(name+".pdf");
+        return Files.exists(base);
+    }
+    
+    public static boolean saveFile(File file) {
         try {
+            Path base = Path.of("").toAbsolutePath().resolve("AllFiles");
+
+            Path dest = base.resolve(file.getName());
+            
+            Files.copy(file.toPath(), dest, StandardCopyOption.REPLACE_EXISTING);
+            
+            return true;
+        } catch (IOException e) {
+            Tools.log(e.getMessage());
+            return false;
+        }
+    }
+    
+    
+    public static void getFile(String filePath, Stage stage) {
+        try {
+            Path origem = Path.of("").toAbsolutePath().resolve(filePath);
+
+            if (!Files.exists(origem)) {
+                Alert.showAlert("Erro", "", "Arquivo não encontrado!", javafx.scene.control.Alert.AlertType.ERROR);
+                return;
+            }
+
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Salvar arquivo");
-            fileChooser.setInitialFileName(name + ".pdf");
+            fileChooser.setInitialFileName(origem.getFileName().toString());
             File file = fileChooser.showSaveDialog(stage);
 
             if (file != null) {
-                FileOutputStream fos = new FileOutputStream(file);
-                fos.write(pdf);
-                fos.close();
+
+                Files.copy(origem, file.toPath());
+
                 Alert.showAlert("Info", "", "Salvo com Sucesso!", javafx.scene.control.Alert.AlertType.INFORMATION);
             }
-
         } catch (IOException e) {
             Tools.log(e.getMessage());
+        }
+    }
+
+    public static boolean deleteFile(String filePath) {
+        try {
+            Path path = Path.of("").toAbsolutePath();
+
+            Path file = path.resolve(filePath);
+
+            if (!Files.exists(file)) {
+                return false;
+            }
+
+            Files.delete(file);
+            return true;
+        } catch (IOException e) {
+            Tools.log(e.getMessage());
+            return false;
         }
     }
 }

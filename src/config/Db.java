@@ -12,12 +12,12 @@ public class Db {
     private static Connection conn = null;
     
     public static Connection getConnection() {
-        File file = new File("arquivos.sqlite");
-        
-        if (file.exists()) {
+        File fileDb = new File("ListFile.sqlite");
+
+        if (fileDb.exists()) {
             if (conn == null) {
                 try {
-                    conn = DriverManager.getConnection("jdbc:sqlite:arquivos.sqlite");
+                    conn = DriverManager.getConnection("jdbc:sqlite:ListFile.sqlite");
                     return conn;
                 } catch (SQLException e) {
                     System.err.println("Error the connection: "+e);
@@ -26,6 +26,7 @@ public class Db {
                 return conn;
             }
         } else {
+            System.out.println("error");
             System.exit(0);
         }
         return null;

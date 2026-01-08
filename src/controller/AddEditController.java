@@ -28,7 +28,6 @@ public class AddEditController implements Initializable {
     private Stage stage;
     private Document document;
 
-    private byte[] fileByte;
     private double fileSize;
     private int pageCounter;
 
@@ -69,11 +68,10 @@ public class AddEditController implements Initializable {
     }
 
     public void onBtLoadFile() {
-        file = PdfTools.LoadFile(stage);
+        file = PdfTools.loadFile(stage);
         if (file != null) {
             fileSize = file.length();
             txtFileName.setText(file.getName().replaceFirst("\\.pdf$", ""));
-            fileByte = PdfTools.convertToByte(file);
             pageCounter = PdfTools.getPageCounter(file);
             labelAlert.setText("Arquivo carregado");
         }
@@ -81,15 +79,24 @@ public class AddEditController implements Initializable {
 
     public void onBtSave(ActionEvent event) {
         if (txtFileName.getText().equals("") || file == null || cbFileCategories.getValue() == null || cbFileCategories.getValue() == "Categoria") {
-            labelAlert.setText("Erro ao Salvar.");
+            labelAlert.setText("Campo não preenchido.");
         } else {
             String title = txtFileName.getText().toLowerCase();
             String categories = cbFileCategories.getValue();
             String description = txtaFileDescription.getText().toLowerCase();
-            Document obj = new Document(null, title, categories, description, fileByte, pageCounter, fileSize);
-            service.saveOrUpdate(obj);
-            notifyDataChangeListeners();
-            Tools.currentStage(event).close();
+            Document obj = new Document(null, title, categories, description, pageCounter, fileSize);
+
+            if (!PdfTools.existFile(title)) {
+                if (PdfTools.saveFile(file)) {
+                    service.saveOrUpdate(obj);
+                    notifyDataChangeListeners();
+                    Tools.currentStage(event).close();
+                } else {
+                    labelAlert.setText("Não foi possivel salvar o arquivo");
+                }
+            } else {
+                labelAlert.setText("Arquivo já existente");
+            }
         }
     }
 
@@ -116,10 +123,10 @@ public class AddEditController implements Initializable {
 
     private void addCategoryComboBox() {
         cbFileCategories.getItems().clear();
-       
-        for (String category: Tools.getCategory()) {
+
+        for (String category : Tools.getCategory()) {
             cbFileCategories.getItems().add(category);
-        }  
+        }
     }
 
     public void subscriberDataChangeListener(DataChangeListener listener) {
