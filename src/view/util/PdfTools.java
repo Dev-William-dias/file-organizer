@@ -19,7 +19,7 @@ public class PdfTools {
             }
             return counter;
         } catch (IOException e) {
-            Tools.log(e.getMessage());
+            Tools.log("PdfTools getPageCounter: " + e.getMessage());
             throw new RuntimeException(e);
         }
     }
@@ -52,7 +52,7 @@ public class PdfTools {
             
             return true;
         } catch (IOException e) {
-            Tools.log(e.getMessage());
+            Tools.log("PdfTools existFile: " + e.getMessage());
             return false;
         }
     }
@@ -60,7 +60,7 @@ public class PdfTools {
     
     public static void getFile(String filePath, Stage stage) {
         try {
-            Path origem = Path.of("").toAbsolutePath().resolve(filePath);
+            Path origem = Path.of("").toAbsolutePath().resolve("AllFiles/"+ filePath + ".pdf");
 
             if (!Files.exists(origem)) {
                 Alert.showAlert("Erro", "", "Arquivo não encontrado!", javafx.scene.control.Alert.AlertType.ERROR);
@@ -79,7 +79,7 @@ public class PdfTools {
                 Alert.showAlert("Info", "", "Salvo com Sucesso!", javafx.scene.control.Alert.AlertType.INFORMATION);
             }
         } catch (IOException e) {
-            Tools.log(e.getMessage());
+            Tools.log("PdfTools getFile: " + e.getMessage());
         }
     }
 
@@ -96,7 +96,7 @@ public class PdfTools {
             Files.delete(file);
             return true;
         } catch (IOException e) {
-            Tools.log(e.getMessage());
+            Tools.log("PdfTools deleteFile: " + e.getMessage());
             return false;
         }
     }

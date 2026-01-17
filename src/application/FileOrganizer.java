@@ -11,7 +11,7 @@ import view.util.Alert;
 
 import view.util.Tools;
 
-public class Main extends Application {
+public class FileOrganizer extends Application {
 
     private static Scene mainScene;
     private static Stage stage;
@@ -31,7 +31,7 @@ public class Main extends Application {
             primaryStage.show();
         } catch (IOException e) {
            Alert.showAlert("Erro ao executar", "", "verifique o log para mais detalhes", javafx.scene.control.Alert.AlertType.WARNING);
-           Tools.log(e.getMessage());
+           Tools.log("FileOrganizer start: " + e.getMessage());
            System.exit(0);
         }
     }

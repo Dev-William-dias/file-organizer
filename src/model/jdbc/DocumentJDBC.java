@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import model.dao.DocumentDao;
 import model.entities.Document;
-import view.util.Alert;
 import view.util.Tools;
 
 public class DocumentJDBC implements DocumentDao {
@@ -25,13 +24,12 @@ public class DocumentJDBC implements DocumentDao {
     public void insert(Document obj) {
         PreparedStatement st = null;
         try {
-            st = conn.prepareStatement("INSERT INTO files(name, category, description, file_path, numberPages, fileSize) VALUES (?, ?, ?, ?, ?, ?)");
+            st = conn.prepareStatement("INSERT INTO files(name, category, description, numberPages, fileSize) VALUES (?, ?, ?, ?, ?)");
             st.setString(1, obj.getName());
             st.setString(2, obj.getCategory());
             st.setString(3, obj.getDescription());
-            st.setString(4, "AllFile/"+obj.getName()+".pdf");
-            st.setInt(5, obj.getNumberPages());
-            st.setDouble(6, obj.getFileSize());
+            st.setInt(4, obj.getNumberPages());
+            st.setDouble(5, obj.getFileSize());
             
             st.execute();
         } catch (SQLException e) {
@@ -53,7 +51,6 @@ public class DocumentJDBC implements DocumentDao {
             
             st.execute();
         } catch (SQLException e) {
-            Alert.showAlert("Erro", "", "Erro ao atualizar dos dados", javafx.scene.control.Alert.AlertType.WARNING);
             Tools.log("DocumentJDBC update: "+e.getMessage());
         } finally {
             Db.closeStatement(st);
@@ -81,11 +78,11 @@ public class DocumentJDBC implements DocumentDao {
         ResultSet rs = null;
         
         try {
-            st = conn.prepareStatement("SELECT file_path FROM files WHERE id = ?");
+            st = conn.prepareStatement("SELECT name FROM files WHERE id = ?");
             st.setInt(1, id);
             
             rs =  st.executeQuery();
-            return rs.getString("file_path");
+            return rs.getString("name");
         } catch (SQLException e) {
             Tools.log("DocumentJDBC findByFileId: "+e.getMessage());
         } finally {

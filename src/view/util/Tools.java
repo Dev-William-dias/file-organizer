@@ -11,7 +11,6 @@ import model.jdbc.UtilJDBC;
 
 public class Tools {
 
-    
     public static List<String> getCategory() {
         UtilJDBC utilJDBC = new UtilJDBC();
         List<String> list = utilJDBC.findAllCategory();
@@ -45,7 +44,7 @@ public class Tools {
             saveLog.write("\n" + data + ": "+ error);
             saveLog.close();
         } catch (IOException e) {
-            throw new RuntimeException("Error creating log file. \n"+e.getMessage());
+            throw new RuntimeException("Error creating log file. "+e.getMessage());
         }
     }
 }

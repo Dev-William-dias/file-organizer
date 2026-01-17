@@ -1,6 +1,6 @@
 package controller;
 
-import application.Main;
+import application.FileOrganizer;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashSet;
@@ -274,7 +274,7 @@ public class HomeController extends DataChangeListener implements Initializable 
 
                 setAlignment(Pos.CENTER);
                 setGraphic(button);
-                button.setOnAction((event) -> PdfTools.getFile(service.findByFileId(obj.getId()), Main.getStage()));
+                button.setOnAction((event) -> PdfTools.getFile(service.findByFileId(obj.getId()), FileOrganizer.getStage()));
             }
         });
     }
@@ -314,7 +314,7 @@ public class HomeController extends DataChangeListener implements Initializable 
         Optional<ButtonType> result = Alert.showConfirmation("Confirmação", "Tem certeza de que deseja excluir?");
         if (result.get() == ButtonType.OK) {
             if (service == null) {
-                throw new IllegalStateException("Service was null");
+                Tools.log("HomeController removeEntity service was null");
             }
             if (PdfTools.deleteFile("AllFiles/" + obj.getName() + ".pdf")) {
                 service.deleteById(obj.getId());
@@ -351,7 +351,7 @@ public class HomeController extends DataChangeListener implements Initializable 
             dialogStage.show();
         } catch (IOException e) {
             Alert.showAlert("Erro", "", "Error ao mostrar arquivo.", javafx.scene.control.Alert.AlertType.WARNING);
-            Tools.log(e.getMessage());
+            Tools.log("HomeController showWindow: " + e.getMessage());
         }
     }
 

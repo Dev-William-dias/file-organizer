@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import view.util.Tools;
 
 public class Db {
     
@@ -20,14 +21,13 @@ public class Db {
                     conn = DriverManager.getConnection("jdbc:sqlite:ListFile.sqlite");
                     return conn;
                 } catch (SQLException e) {
-                    System.err.println("Error the connection: "+e);
+                    Tools.log("Db getConnection: "+e.getMessage());
                 }
             } else {
                 return conn;
             }
         } else {
-            System.out.println("error");
-            System.exit(0);
+            Tools.log("Banco de dados nao encontrado");
         }
         return null;
     }
@@ -36,7 +36,7 @@ public class Db {
         try {
             conn.close();
         } catch (SQLException e) {
-            System.err.println("Alert error when closing: "+ e);
+            Tools.log("Db closeConnection: "+e.getMessage());
         }
     }
 
@@ -45,7 +45,7 @@ public class Db {
             try {
                 st.close();
             } catch (SQLException e) {
-                System.err.println("Alert error when closing: "+ e);
+                Tools.log("Db closeStatement: "+e.getMessage());
             }
         }
     }
@@ -55,7 +55,7 @@ public class Db {
             try {
                 rs.close();
             } catch (SQLException e) {
-                System.err.println("Alert error when closing: "+ e);
+                Tools.log("Db closeResultSet: "+e.getMessage());
             }
         }
     }
