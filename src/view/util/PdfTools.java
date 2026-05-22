@@ -38,7 +38,7 @@ public class PdfTools {
     }
 
     public static boolean existFile(String name) {
-        Path base = Path.of("").toAbsolutePath().resolve("AllFiles").resolve(name+".pdf");
+        Path base = Path.of("").toAbsolutePath().resolve("AllFiles").resolve(name.toLowerCase()+".pdf");
         return Files.exists(base);
     }
     
@@ -46,7 +46,7 @@ public class PdfTools {
         try {
             Path base = Path.of("").toAbsolutePath().resolve("AllFiles");
 
-            Path dest = base.resolve(file.getName());
+            Path dest = base.resolve(file.getName().toLowerCase());
             
             Files.copy(file.toPath(), dest, StandardCopyOption.REPLACE_EXISTING);
             

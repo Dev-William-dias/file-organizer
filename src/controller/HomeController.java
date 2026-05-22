@@ -32,6 +32,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.entities.Document;
@@ -70,6 +71,9 @@ public class HomeController extends DataChangeListener implements Initializable 
     @FXML
     private ComboBox<String> categories;
 
+    @FXML
+    private HBox panelSearch;
+    
     @FXML
     private ProgressIndicator progressView;
 
@@ -133,6 +137,7 @@ public class HomeController extends DataChangeListener implements Initializable 
 
         categories.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, selection) -> {
             if (selection != null) {
+                panelSearch.setDisable(true);
                 toUpdate = false;
                 updateTable(selection);
             }
@@ -236,6 +241,7 @@ public class HomeController extends DataChangeListener implements Initializable 
             initBtDownload();
             initBtDelete();
             progressView.setVisible(false);
+            panelSearch.setDisable(false);
         });
         
         if (searchFor.equals("")) {
